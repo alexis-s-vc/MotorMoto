@@ -1,31 +1,25 @@
 // CODIGO PARA MOTOR DE 2 TIEMPOS
 
-const int potPin1 = 34;
+//PINES PARA LOS POT LINEALES
+const int potPin1 = 34; 
 const int potPin2 = 34;
 const int potPin3 = 34;
 const int potPin4 = 34;
 const int potPin5 = 34;
 
+const int button = 35; // FINAL DE CARRERA
 
-const int button = 35;
+//LED'S RGB
+const int ledAzul1 = 4; //LED1
+const int ledRojo1 = 2;
 
-const int ledAzul = 4;
-const int ledRojo = 2;
+const int ledAzul2 = 16; //LED2
+const int ledRojo2 = 17;
 
-const int ledAzul = 4;
-const int ledRojo = 2;
-
-const int ledAzul = 4;
-const int ledRojo = 2;
-
-const int ledAzul = 4;
-const int ledRojo = 2;
+const int motor = 23; // TALVES LA QUITEMOS
 
 
-
-const int motor = 23;
-
-
+//VARIABLES AUXILIARES
 unsigned long previousTime = 0;
 int potValor = 0;
 int ciclo = 0;
@@ -35,17 +29,14 @@ const int frecuencia = 500;
 const int resolucion = 8;
 const int segundo = 2000;
 
-void setup() {
-  Serial.begin(9600);
+void setup() { 
+  Serial.begin(9600); // INICIALIZA EL SERIAL
   ledcAttach(motor, frecuencia, resolucion);
-  ledcAttach(ledAzul, frecuencia, resolucion);  
+  ledcAttach(ledAzul1, frecuencia, resolucion);  
+  ledcAttach(ledAzul2, frecuencia, resolucion);  
   pinMode(button, INPUT);
-  pinMode(ledRojo, OUTPUT);
-
-  delay(2000);
-  ledcWrite(motor, 200);
-  delay(1000);
-  ledcWrite(motor, 0);
+  pinMode(ledRojo1, OUTPUT);
+  pinMode(ledRojo2, OUTPUT);
 }
 
 void loop() {
@@ -59,7 +50,6 @@ void loop() {
   }
 
   potValor = analogRead(potPin);
-    
   potValor = map(potValor, 0, 4095, 0, 255);
   
 
