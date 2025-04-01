@@ -1,9 +1,28 @@
 // CODIGO PARA MOTOR DE 2 TIEMPOS
 
-const int potPin = 34;
+const int potPin1 = 34;
+const int potPin2 = 34;
+const int potPin3 = 34;
+const int potPin4 = 34;
+const int potPin5 = 34;
+
+
 const int button = 35;
+
 const int ledAzul = 4;
 const int ledRojo = 2;
+
+const int ledAzul = 4;
+const int ledRojo = 2;
+
+const int ledAzul = 4;
+const int ledRojo = 2;
+
+const int ledAzul = 4;
+const int ledRojo = 2;
+
+
+
 const int motor = 23;
 
 
