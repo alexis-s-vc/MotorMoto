@@ -1,6 +1,5 @@
 // CODIGO PARA MOTOR DE 2 TIEMPOS
 
-
 const int potPin = 34;
 const int button = 35;
 const int ledAzul = 4;
@@ -44,7 +43,6 @@ void loop() {
     
   potValor = map(potValor, 0, 4095, 0, 255);
   
-
 
   if(digitalRead(button) == HIGH){
     digitalWrite(ledRojo, HIGH);
