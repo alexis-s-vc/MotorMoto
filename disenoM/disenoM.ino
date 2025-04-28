@@ -9,6 +9,12 @@ const int ledAzul[4] = {4, 17, 18, 23};
 const int ledRojo[4] = {2, 16, 5, 22};
 const int ledVerde[4] = {15, 3, 19, 21};
 
+// Configuración del motor DC
+const int motorPin = 25;           // Pin para control del motor DC
+const int motorButtonPins[4] = {26, 9, 10, 8}; // Botones para control de velocidad
+const int motorSpeedLevels[4] = {0, 26, 128, 255}; // Valores PWM: 0%, 10%, 50%, 100%
+
+
 // Estados del ciclo
 enum EstadoMotor {
   ESPERANDO_INICIO,  // Esperando presionar botón para iniciar ciclo
@@ -18,19 +24,23 @@ enum EstadoMotor {
   ESCAPE             // Esperando siguiente ciclo
 };
 
+
 EstadoMotor estadoPiston[4] = {ESPERANDO_INICIO, ESPERANDO_INICIO, ESPERANDO_INICIO, ESPERANDO_INICIO};
+
 
 // Variables para seguimiento de cada pistón
 int valorAnterior[4] = {0, 0, 0, 0};
 bool subiendo[4] = {true, true, true, true};
 bool cicloCompletado[4] = {false, false, false, false};
 
-// Debouncing de botones
-unsigned long ultimoPulso[4] = {0, 0, 0, 0};
-const unsigned long debounceDelay = 200;
+// Variables para el control del motor DC
+int currentMotorSpeed = 0;
+bool motorButtonStates[4] = {false, false, false, false};
+bool motorButtonPrevStates[4] = {false, false, false, false};
 
-// Configuración de PWM
+// Configuración del PWM
 const int frecuencia = 500;
+const int motorFreq = 1000;     // Frecuencia PWM para el motor
 const int resolucion = 8;
 
 void setup() {
@@ -46,7 +56,14 @@ void setup() {
     
     // Configurar botones como entrada
     pinMode(buttonPins[i], INPUT);
+    
+    // Configurar botones del motor como entrada
+    pinMode(motorButtonPins[i], INPUT);
   }
+  
+  // Configurar el canal PWM para el motor
+  ledcAttach(motorPin, frecuencia, resolucion);
+  ledcWrite(motorPin, 0); // Iniciar motor apagado
 }
 
 void loop() {
@@ -54,7 +71,38 @@ void loop() {
   for (int i = 0; i < 4; i++) {
     procesarPiston(i);
   }
+  
+  // Procesar control del motor DC
+  procesarControlMotor();
+  
   delay(20); // Pequeño retraso para estabilidad
+}
+
+// Controlar el motor DC con botones
+void procesarControlMotor() {
+  // Leer estado de cada botón del motor
+  for (int i = 0; i < 4; i++) {
+    // Leer estado actual del botón
+    bool currentState = digitalRead(motorButtonPins[i]) == HIGH;
+    
+    // Detectar cambio de estado (flanco ascendente)
+    if (currentState && !motorButtonPrevStates[i]) {
+      // Botón presionado - establecer velocidad correspondiente
+      currentMotorSpeed = motorSpeedLevels[i];
+      
+      Serial.print("Motor velocidad cambiada a: ");
+      Serial.print(currentMotorSpeed);
+      ledcWrite(motorPin, currentMotorSpeed);
+      Serial.print(" (");
+      if (i == 0) Serial.println("0%)");
+      else if (i == 1) Serial.println("10%)");
+      else if (i == 2) Serial.println("50%)");
+      else if (i == 3) Serial.println("100%)");
+    }
+    
+    // Actualizar estado previo para la próxima iteración
+    motorButtonPrevStates[i] = currentState;
+  }
 }
 
 void procesarPiston(int indice) {
@@ -65,10 +113,7 @@ void procesarPiston(int indice) {
   // Verificar pulsación de botón con debounce
   bool botonPresionado = false;
   if (digitalRead(buttonPins[indice]) == HIGH) {
-    if ((millis() - ultimoPulso[indice]) > debounceDelay) {
-      botonPresionado = true;
-      ultimoPulso[indice] = millis();
-    }
+    botonPresionado = true;
   }
   
   // Detectar cambio de dirección en potenciómetro
@@ -108,7 +153,6 @@ void procesarPiston(int indice) {
       if (botonPresionado) {
         // Simular chispa momentánea (rojo intenso)
         prenderLed(indice, 0, 255, 0); // Rojo brillante
-        delay(300);
         estadoPiston[indice] = EXPLOSION;
       }
       break;
