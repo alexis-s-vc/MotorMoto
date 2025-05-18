@@ -1,17 +1,17 @@
-// Pines de los potenciómetros
-const int potPins[4] = {34, 35, 32, 33};
+// Pines de los botones (modificados para DevKit V1)
+const int buttonPins[4] = {23, 22, 21, 19};
 
-// Pines de los botones
-const int buttonPins[4] = {14, 12, 13, 27};
+// Pines de los potenciómetros (ADC compatible)
+const int potPins[4] = {36, 39, 34, 35};
 
-// Pines de los LEDs RGB (catodo común)
-const int ledAzul[4] = {4, 17, 18, 23};
-const int ledRojo[4] = {2, 16, 5, 22};
-const int ledVerde[4] = {15, 3, 19, 21};
+// Pines de los LEDs RGB (GPIO que pueden ser salidas)
+const int ledRojo[4] = {1, 14, 12, 4};
+const int ledVerde[4] = {26, 13, 16, 2};
+const int ledAzul[4] = {27, 15, 17, 5};
 
 // Configuración del motor DC
-const int motorPin = 25;           // Pin para control del motor DC
-const int motorButtonPins[4] = {26, 9, 10, 8}; // Botones para control de velocidad
+const int motorPin = 3;           // Pin PWM para control del motor DC
+const int motorButtonPins[4] = {18, 32, 33, 25}; // Botones para control de velocidad
 const int motorSpeedLevels[4] = {0, 26, 128, 255}; // Valores PWM: 0%, 10%, 50%, 100%
 
 
@@ -24,9 +24,7 @@ enum EstadoMotor {
   ESCAPE             // Esperando siguiente ciclo
 };
 
-
 EstadoMotor estadoPiston[4] = {ESPERANDO_INICIO, ESPERANDO_INICIO, ESPERANDO_INICIO, ESPERANDO_INICIO};
-
 
 // Variables para seguimiento de cada pistón
 int valorAnterior[4] = {0, 0, 0, 0};
@@ -51,18 +49,18 @@ void setup() {
   for (int i = 0; i < 4; i++) {
     // Conectar los canales PWM a los pines GPIO usando ledcAttach
     ledcAttach(ledAzul[i], frecuencia, resolucion);
-    ledcAttach(ledRojo[i], frecuencia, resolucion);
-    ledcAttach(ledVerde[i], frecuencia, resolucion);
+    ledcAttach(ledRojo[i], frecuencia+i, resolucion);
+    ledcAttach(ledVerde[i], frecuencia+i+i, resolucion);
     
     // Configurar botones como entrada
-    pinMode(buttonPins[i], INPUT);
+    pinMode(buttonPins[i], INPUT_PULLDOWN);
     
     // Configurar botones del motor como entrada
-    pinMode(motorButtonPins[i], INPUT);
+    pinMode(motorButtonPins[i], INPUT_PULLDOWN);
   }
-  
+    
   // Configurar el canal PWM para el motor
-  ledcAttach(motorPin, frecuencia, resolucion);
+  ledcAttach(motorPin, motorFreq, resolucion);
   ledcWrite(motorPin, 0); // Iniciar motor apagado
 }
 
@@ -170,7 +168,7 @@ void procesarPiston(int indice) {
       
     case ESCAPE:
       // Verde tenue indicando fase de escape
-      prenderLed(indice, 0, 0, 50); // Verde tenue
+      prenderLed(indice, 0, 0, 20); // Verde tenue
       
       // Botón reinicia el ciclo a ADMISION
       if (botonPresionado) {
