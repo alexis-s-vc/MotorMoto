@@ -1,3 +1,14 @@
+/* ******************************************************
+* MOTOR.ino
+*
+* Author:  Miguel Nahuatlato, Rocio Romero, Alexis Vázquez
+* License: MIT
+*
+* Simulador de Motor de 4 Tiempos ESP32.
+*
+* *******************************************************/
+//LINK DE LA SIMULACION: https://wokwi.com/projects/430884430846177281
+
 // Pines de los botones (modificados para DevKit V1)
 const int buttonPins[4] = {23, 22, 21, 19};
 
@@ -106,7 +117,7 @@ void procesarControlMotor() {
 void procesarPiston(int indice) {
   // Leer valor del potenciómetro y normalizarlo
   int valorPot = analogRead(potPins[indice]);
-  int valorPotMapeado = map(valorPot, 0, 4095, 0, 255);
+  int valorPotMapeado = map(valorPot, 4095, 0, 0, 255);
   
   // Verificar pulsación de botón con debounce
   bool botonPresionado = false;
