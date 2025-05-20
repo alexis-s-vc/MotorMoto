@@ -23,7 +23,7 @@ const int ledAzul[4] = {27, 15, 17, 5};
 // Configuración del motor DC
 const int motorPin = 3;           // Pin PWM para control del motor DC
 const int motorButtonPins[4] = {18, 32, 33, 25}; // Botones para control de velocidad
-const int motorSpeedLevels[4] = {0, 26, 128, 255}; // Valores PWM: 0%, 10%, 50%, 100%
+const int motorSpeedLevels[4] = {0, 128, 180, 255}; // Valores PWM: 0%, 10%, 50%, 100%
 
 
 // Estados del ciclo
